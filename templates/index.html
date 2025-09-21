@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <title>SiriusXM Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+  <h1>SiriusXM Browser Player</h1>
+  <div id="channels"></div>
+
+  <h2 id="now-playing"></h2>
+  <video id="player" controls autoplay width="400"></video>
+
+  <script>
+    async function loadChannels() {
+      let res = await fetch("/channels");
+      let channels = await res.json();
+      let container = document.getElementById("channels");
+      container.innerHTML = "";
+      channels.forEach(ch => {
+        let btn = document.createElement("button");
+        btn.textContent = ch.name;
+        btn.onclick = () => playChannel(ch.id, ch.name);
+        container.appendChild(btn);
+      });
+    }
+
+    async function playChannel(id, name) {
+      let res = await fetch(`/stream/${id}`);
+      let data = await res.json();
+      document.getElementById("now-playing").textContent = "Now Playing: " + name;
+
+      let video = document.getElementById("player");
+      if (Hls.isSupported()) {
+        let hls = new Hls();
+        hls.loadSource(data.url);
+        hls.attachMedia(video);
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = data.url;
+      }
+    }
+
+    loadChannels();
+  </script>
+</body>
+</html>

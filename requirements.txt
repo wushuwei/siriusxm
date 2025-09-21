@@ -1,0 +1,10 @@
+# requirements.txt
+
+# SiriusXM client
+sxm>=0.1.0
+
+# Web framework
+Flask>=2.0
+
+# Optional: if you want to use python-dotenv for .env files
+python-dotenv>=1.0
